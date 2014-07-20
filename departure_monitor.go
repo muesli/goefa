@@ -26,7 +26,7 @@ type DateTimeType struct {
 }
 
 type Line struct {
-	Number    int    `xml:"number,attr"`
+	Number    string `xml:"number,attr"`
 	Direction string `xml:"direction,attr"`
 }
 
