@@ -70,7 +70,7 @@ func fill_width(str string, width int) string {
 func main() {
 
 	station_id := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
-	max_results := flag.Int("results", 10, "how many results to show")
+	max_results := flag.Int("results", 5, "how many results to show")
 	flag.Parse()
 
 	baseULR := "http://efa.avv-augsburg.de/avv/"
