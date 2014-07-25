@@ -72,21 +72,16 @@ func main() {
 	}
 
 	resp, err := http.PostForm(baseULR+endpoint, params)
+	if err != nil {
+		panic(err)
+	}
 	defer resp.Body.Close()
 
-	if err != nil {
-		return
-	}
-
 	var result XmlResult
-
 	decoder := xml.NewDecoder(resp.Body)
 	decoder.CharsetReader = charset.NewReader
-	err = decoder.Decode(&result)
-
-	if err != nil {
-		fmt.Println(err)
-		return
+	if err = decoder.Decode(&result); err != nil {
+		panic(err)
 	}
 	//fmt.Printf("%+v", result)
 
@@ -94,7 +89,6 @@ func main() {
 		fmt.Println("stop does not exist or name is not unique!")
 		return
 	}
-
 	fmt.Println("selected stop: " + result.Stop.IdfdStop.StopName + " (" + strconv.Itoa(result.Stop.IdfdStop.StopID) + ")\n")
 
 	for _, departure := range result.Departures {
