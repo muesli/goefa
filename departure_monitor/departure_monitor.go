@@ -25,6 +25,7 @@ func main() {
 	departures, err := efa.Departures(*station_id, *max_results)
 	if err != nil {
 		fmt.Println("Stop does not exist or name is not unique!")
+		return
 	}
 	for _, departure := range departures {
 		plu := " "
