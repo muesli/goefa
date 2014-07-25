@@ -1,4 +1,4 @@
-package main
+package goefa
 
 type DateTimeType struct {
 	Date struct {
@@ -36,7 +36,7 @@ type StopInfo struct {
 	} `xml:"odvNameElem"`
 }
 
-type XmlResult struct {
+type StopResult struct {
 	Stop       StopInfo    `xml:"itdDepartureMonitorRequest>itdOdv>itdOdvName"`
 	Departures []Departure `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
