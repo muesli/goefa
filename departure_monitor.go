@@ -54,7 +54,6 @@ type XmlResult struct {
 }
 
 func main() {
-
 	station_id := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
 	max_results := flag.Int("results", 5, "how many results to show")
 	flag.Parse()
@@ -106,10 +105,10 @@ func main() {
 		}
 
 		fmt.Printf("route %-5s due in %-2s minute%s --> %s\n",
-				   departure.ServingLine.Number,
-				   strconv.Itoa(departure.Countdown),
-				   plu,
-				   departure.ServingLine.Direction)
+			departure.ServingLine.Number,
+			strconv.Itoa(departure.Countdown),
+			plu,
+			departure.ServingLine.Direction)
 	}
 
 }
