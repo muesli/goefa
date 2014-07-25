@@ -16,17 +16,46 @@ type EFA struct {
 	BaseURL string
 }
 
-func (efa *EFA) FindStation(name string) (int, error) {
-	//FIXME: impl eventually
-	return -1, errors.New("Not yet implemented")
-}
-
-//FIXME: turn station_id into an int (or does EFA really use a string as id?)
-func (efa *EFA) Departures(station_id string, results int) ([]Departure, error) {
+//FIXME: separate goefa structs (like Station) and XML structs
+func (efa *EFA) FindStation(name string) (*StopInfo, error) {
+	//FIXME: nicer impl: use station search api if avail
 	endpoint := "XML_DM_REQUEST"
 	params := url.Values{
 		"type_dm":              {"stop"},
-		"name_dm":              {station_id},
+		"name_dm":              {name},
+		"useRealtime":          {"1"},
+		"locationServerActive": {"1"},
+		"dmLineSelection":      {"all"},
+		"limit":                {"5"},
+		"mode":                 {"direct"},
+	}
+
+	resp, err := http.PostForm(efa.BaseURL+endpoint, params)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var result StopResult
+	decoder := xml.NewDecoder(resp.Body)
+	decoder.CharsetReader = charset.NewReader
+	if err = decoder.Decode(&result); err != nil {
+		return nil, err
+	}
+
+	if result.Stop.State != "identified" {
+		return nil, errors.New("Stop does not exist or name is not unique!")
+	}
+
+	return &result.Stop, nil
+}
+
+//FIXME: turn station_id into an int
+func (efa *EFA) Departures(station *StopInfo, results int) ([]Departure, error) {
+	endpoint := "XML_DM_REQUEST"
+	params := url.Values{
+		"type_dm":              {"stop"},
+		"name_dm":              {strconv.Itoa(station.IdfdStop.StopID)},
 		"useRealtime":          {"1"},
 		"locationServerActive": {"1"},
 		"dmLineSelection":      {"all"},
