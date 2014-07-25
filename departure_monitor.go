@@ -48,8 +48,7 @@ func main() {
 	//fmt.Printf("%+v", result)
 
 	if result.Stop.State != "identified" {
-		fmt.Println("Stop does not exist or name is not unique!")
-		return
+		panic("Stop does not exist or name is not unique!")
 	}
 	fmt.Printf("Selected stop: %s (%d)\n\n",
 		result.Stop.IdfdStop.StopName,
