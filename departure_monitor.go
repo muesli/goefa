@@ -89,7 +89,9 @@ func main() {
 		fmt.Println("Stop does not exist or name is not unique!")
 		return
 	}
-	fmt.Println("Selected stop: " + result.Stop.IdfdStop.StopName + " (" + strconv.Itoa(result.Stop.IdfdStop.StopID) + ")\n")
+	fmt.Printf("Selected stop: %s (%d)\n\n",
+		result.Stop.IdfdStop.StopName,
+		result.Stop.IdfdStop.StopID)
 
 	for _, departure := range result.Departures {
 		plu := ""
@@ -97,9 +99,9 @@ func main() {
 			plu = "s"
 		}
 
-		fmt.Printf("Route %-5s due in %-2s minute%s --> %s\n",
+		fmt.Printf("Route %-5s due in %-2d minute%s --> %s\n",
 			departure.ServingLine.Number,
-			strconv.Itoa(departure.Countdown),
+			departure.Countdown,
 			plu,
 			departure.ServingLine.Direction)
 	}
