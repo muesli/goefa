@@ -53,20 +53,6 @@ type XmlResult struct {
 	Departures []Departure `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
 
-func fill_width(str string, width int) string {
-
-	orig_len := len(str)
-
-	if orig_len < width {
-
-		for i := 0; i < width-orig_len; i++ {
-			str = str + " "
-		}
-	}
-
-	return str
-}
-
 func main() {
 
 	station_id := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
@@ -103,7 +89,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-
 	//fmt.Printf("%+v", result)
 
 	if result.Stop.State != "identified" {
@@ -120,7 +105,11 @@ func main() {
 			plu = "s"
 		}
 
-		fmt.Println("route " + fill_width(departure.ServingLine.Number, 6) + fill_width(" due in "+strconv.Itoa(departure.Countdown)+" minute"+plu, 19) + " --> " + departure.ServingLine.Direction)
+		fmt.Printf("route %-5s due in %-2s minute%s --> %s\n",
+				   departure.ServingLine.Number,
+				   strconv.Itoa(departure.Countdown),
+				   plu,
+				   departure.ServingLine.Direction)
 	}
 
 }
