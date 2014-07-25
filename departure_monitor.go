@@ -58,7 +58,7 @@ func main() {
 	max_results := flag.Int("results", 5, "how many results to show")
 	flag.Parse()
 
-	baseULR := "http://efa.avv-augsburg.de/avv/"
+	baseURL := "http://efa.avv-augsburg.de/avv/"
 	endpoint := "XML_DM_REQUEST"
 
 	params := url.Values{
@@ -71,7 +71,7 @@ func main() {
 		"mode":                 {"direct"},
 	}
 
-	resp, err := http.PostForm(baseULR+endpoint, params)
+	resp, err := http.PostForm(baseURL+endpoint, params)
 	if err != nil {
 		panic(err)
 	}
