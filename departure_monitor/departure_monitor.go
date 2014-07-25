@@ -16,7 +16,7 @@ func main() {
 	flag.Parse()
 
 /*	if result.Stop.State != "identified" {
-		panic("Stop does not exist or name is not unique!")
+		fmt.Println("Stop does not exist or name is not unique!")
 	}
 	fmt.Printf("Selected stop: %s (%d)\n\n",
 		result.Stop.IdfdStop.StopName,
@@ -24,7 +24,7 @@ func main() {
 
 	departures, err := efa.Departures(*station_id, *max_results)
 	if err != nil {
-		panic("Stop does not exist or name is not unique!")
+		fmt.Println("Stop does not exist or name is not unique!")
 	}
 	for _, departure := range departures {
 		plu := " "
