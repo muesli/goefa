@@ -7,19 +7,13 @@ import (
 	"github.com/muesli/goefa"
 )
 
-var (
-	baseURL string
-)
-
 func main() {
+	efa := goefa.EFA{}
+
 	station_id := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
 	max_results := flag.Int("results", 5, "how many results to show")
-	flag.StringVar(&baseURL, "baseurl", "http://efa.avv-augsburg.de/avv/", "base-url for EFA API")
+	flag.StringVar(&efa.BaseURL, "baseurl", "http://efa.avv-augsburg.de/avv/", "base-url for EFA API")
 	flag.Parse()
-
-	efa := goefa.EFA{
-		BaseURL: baseURL,
-	}
 
 /*	if result.Stop.State != "identified" {
 		panic("Stop does not exist or name is not unique!")
