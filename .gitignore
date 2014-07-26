@@ -21,3 +21,8 @@ _testmain.go
 
 *.exe
 *.test
+
+*~
+
+goefa
+departure_monitor/departure_monitor

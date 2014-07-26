@@ -8,14 +8,15 @@ run
 ```bash
 go get -v
 ```
-to get 3rdparty libraries. 
+to get 3rdparty libraries.
 
 then run
 ```bash
-go run departure_monitor.go
+go run departure_monitor/departure_monitor.go
 ```
 to run it or
 ```bash
-go build departure_monitor.go
+cd departure_monitor
+go build
 ```
 to build it
