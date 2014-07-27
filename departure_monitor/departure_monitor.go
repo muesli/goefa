@@ -12,7 +12,6 @@ func main() {
 
 	stop := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
 	max_results := flag.Int("results", 5, "how many results to show")
-	flag.StringVar(&efa.BaseURL, "baseurl", "http://efa.avv-augsburg.de/avv/", "base-url for EFA API")
 	flag.Parse()
 
 	station, err := efa.FindStation(*stop)

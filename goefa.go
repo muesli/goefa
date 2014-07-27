@@ -14,6 +14,12 @@ import (
 
 type EFAProvider struct {
 	BaseURL string
+
+	DepartureMonitorEndpoint string
+	StopFinderEndpoint       string
+	TripEndpoint             string
+
+	//FIXME: include general params for all requests (e.g. useRealtime, ...)
 }
 
 //FIXME: separate goefa structs (like Station) and XML structs
@@ -51,7 +57,6 @@ func (efa *EFAProvider) FindStop(name string) (*StopInfo, error) {
 }
 
 //FIXME: turn station_id into an int
-	endpoint := "XML_DM_REQUEST"
 func (efa *EFAProvider) Departures(station *StopInfo, results int) ([]Departure, error) {
 	params := url.Values{
 		"type_dm":              {"stop"},
@@ -63,7 +68,7 @@ func (efa *EFAProvider) Departures(station *StopInfo, results int) ([]Departure,
 		"mode":                 {"direct"},
 	}
 
-	resp, err := http.PostForm(efa.BaseURL+endpoint, params)
+	resp, err := http.PostForm(efa.BaseURL+efa.DepartureMonitorEndpoint, params)
 	if err != nil {
 		return []Departure{}, err
 	}
