@@ -23,20 +23,20 @@ type EFAProvider struct {
 }
 
 //FIXME: separate goefa structs (like Station) and XML structs
-	//FIXME: nicer impl: use station search api if avail
-	endpoint := "XML_DM_REQUEST"
 func (efa *EFAProvider) FindStop(name string) (*StopInfo, error) {
+	// FindStop queries the stopfinder API and returns Stops matching 'name'
+
 	params := url.Values{
-		"type_dm":              {"stop"},
-		"name_dm":              {name},
-		"useRealtime":          {"1"},
+		"type_sf":              {"stop"},
+		"name_sf":              {name},
 		"locationServerActive": {"1"},
-		"dmLineSelection":      {"all"},
-		"limit":                {"5"},
-		"mode":                 {"direct"},
+		"outputFormat":         {"XML"},
+		"stateless":            {"1"},
+		// "limit":                {"5"},
+		// "mode":                 {"direct"},
 	}
 
-	resp, err := http.PostForm(efa.BaseURL+endpoint, params)
+	resp, err := http.PostForm(efa.BaseURL+efa.StopFinderEndpoint, params)
 	if err != nil {
 		return nil, err
 	}
