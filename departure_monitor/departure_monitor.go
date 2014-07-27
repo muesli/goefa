@@ -8,13 +8,13 @@ import (
 )
 
 func main() {
-	efa := *goefa.Providers["avv"]
+	efa := goefa.Providers["avv"]
 
 	stop := flag.String("stop", "Königsplatz", "id or (part of the) stop name")
 	max_results := flag.Int("results", 5, "how many results to show")
 	flag.Parse()
 
-	station, err := efa.FindStation(*stop)
+	station, err := efa.FindStop(*stop)
 	if err != nil {
 		fmt.Println("Stop does not exist or name is not unique!")
 		return
