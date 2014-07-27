@@ -12,14 +12,14 @@ import (
 	_ "code.google.com/p/go-charset/data"
 )
 
-type EFA struct {
+type EFAProvider struct {
 	BaseURL string
 }
 
 //FIXME: separate goefa structs (like Station) and XML structs
-func (efa *EFA) FindStation(name string) (*StopInfo, error) {
 	//FIXME: nicer impl: use station search api if avail
 	endpoint := "XML_DM_REQUEST"
+func (efa *EFAProvider) FindStop(name string) (*StopInfo, error) {
 	params := url.Values{
 		"type_dm":              {"stop"},
 		"name_dm":              {name},
@@ -51,8 +51,8 @@ func (efa *EFA) FindStation(name string) (*StopInfo, error) {
 }
 
 //FIXME: turn station_id into an int
-func (efa *EFA) Departures(station *StopInfo, results int) ([]Departure, error) {
 	endpoint := "XML_DM_REQUEST"
+func (efa *EFAProvider) Departures(station *StopInfo, results int) ([]Departure, error) {
 	params := url.Values{
 		"type_dm":              {"stop"},
 		"name_dm":              {strconv.Itoa(station.IdfdStop.StopID)},
