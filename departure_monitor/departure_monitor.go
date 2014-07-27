@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/muesli/goefa"
+	"github.com/michiwend/goefa"
 )
 
 func main() {
