@@ -41,10 +41,10 @@ type EFAStop struct {
 	//FIXME include coordinates
 }
 
-// Performs a stateless dm_request for the corresponding EFAStop and returns an
-// array of EFADepartures. Use time.Now() as the first argument in order to get
-// the very next departures. The second argument determines how many results
-// will be returned by EFA
+// Departures performs a stateless dm_request for the corresponding EFAStop and
+// returns an array of EFADepartures. Use time.Now() as the first argument in
+// order to get the very next departures. The second argument determines how
+// many results will be returned by EFA
 func (stop *EFAStop) Departures(time time.Time, results int) (
 	[]*EFADeparture, error) {
 

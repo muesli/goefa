@@ -44,9 +44,9 @@ type EFAProvider struct {
 
 // FindStop queries the EFA StopFinder API for the corresponding provider and
 // returns
-//   whether the stop was identified/unique (bool)
-//   an array of matched stops (or only the identified one)
-//   an error in case somthing went wrong
+// - whether the stop was identified/unique (bool)
+// - an array of matched stops (or only the identified one)
+// - an error in case somthing went wrong
 func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 
 	// Struct for unmarshaling StopFinderRequest into
