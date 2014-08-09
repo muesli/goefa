@@ -28,3 +28,5 @@ idtfd, stops, err := myprovider.FindStop("Königsplatz")
 // If stop was identified get the 5 next departures
 deps, err := stops[0].Departures(time.Now(), 5)
 ```
+
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/michiwend/goefa)
