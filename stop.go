@@ -47,8 +47,10 @@ import (
 type EFAStop struct {
 }
 
-// Performs a stateless dm_request for the represented stop and returns an
-// array of departures.
+// Performs a stateless dm_request for the corresponding EFAStop and returns an
+// array of EFADepartures. Use time.Now() as the first argument in order to get
+// the very next departures. The second argument determines how many results
+// will be returned by EFA
 func (stop *EFAStop) Departures(time time.Time, results int) (
 	[]*EFADeparture, error) {
 
@@ -57,7 +59,7 @@ func (stop *EFAStop) Departures(time time.Time, results int) (
 		"name_dm":              {strconv.Itoa(stop.Id)},
 		"locationServerActive": {"1"},
 		"useRealtime":          {"1"},
-		"dmLineSelection":      {"all"}, //FIXME enable line selection with param
+		"dmLineSelection":      {"all"}, //FIXME enable line selection
 		"limit":                {strconv.Itoa(results)},
 		"mode":                 {"direct"},
 		"stateless":            {"1"},
