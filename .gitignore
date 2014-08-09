@@ -26,3 +26,5 @@ _testmain.go
 
 goefa
 departure_monitor/departure_monitor
+
+*.swp
