@@ -31,20 +31,14 @@ import (
 	"code.google.com/p/go-charset/charset"
 )
 
-	Id       int    `xml:"id,attr"`
-	Name     string `xml:"objectName,attr"`
-	Locality string `xml:"locality,attr"`
-
-	IsTransferStop bool `xml:"isTransferStop,attr"`
-
-	//FIXME: what type of coordinates?
-	//Lng float64
-	//Lat float64
-
-	//ServingLines []ServingLine
-
-	Provider *EFAProvider
 type EFAStop struct {
+	Id             int    `xml:"id,attr"`
+	Name           string `xml:"objectName,attr"`
+	Locality       string `xml:"locality,attr"`
+	IsTransferStop bool   `xml:"isTransferStop,attr"`
+	Provider       *EFAProvider
+
+	//FIXME include coordinates
 }
 
 // Performs a stateless dm_request for the corresponding EFAStop and returns an
