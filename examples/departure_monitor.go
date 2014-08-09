@@ -91,7 +91,7 @@ func main() {
 		}
 
 		fmt.Printf("%17s %-5s due in %-2d minute%s (%s) --> %s\n",
-			goefa.MOT[dep.ServingLine.Type],
+			goefa.MOT[dep.ServingLine.MotType],
 			dep.ServingLine.Number,
 			dep.Countdown,
 			plu,
