@@ -13,8 +13,9 @@ import (
 )
 
 type EFAProvider struct {
-	BaseURL string
+	Name string
 
+	BaseURL                  string
 	DepartureMonitorEndpoint string
 	StopFinderEndpoint       string
 	TripEndpoint             string

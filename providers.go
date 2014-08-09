@@ -1,20 +1,21 @@
 package goefa
 
+// Map of supported EFA providers
 var Providers = map[string]EFAProvider{
 
-	// Augsburger Verkehrsverbund
 	"avv": EFAProvider{
+		Name:                     "Augsburger Verkehrs- und Tarifverbund GmbH",
 		BaseURL:                  "http://efa.avv-augsburg.de/avv/",
 		DepartureMonitorEndpoint: "XML_DM_REQUEST",
-		StopFinderEndpoint:       "XML_STOP_FINDER_REQUEST",
+		StopFinderEndpoint:       "XML_STOPFINDER_REQUEST",
 		TripEndpoint:             "XML_TRIP_REQUEST",
 	},
 
-	// Münchner Verkehrs- und Tarifverbund
 	"mvv": EFAProvider{
-		BaseURL:                  "http://efa.mvv-muenchen.de/",
+		Name:                     "Münchner Verkehrs- und Tarifverbund",
+		BaseURL:                  "http://efa.mvv-muenchen.de/mvv/",
 		DepartureMonitorEndpoint: "XML_DM_REQUEST",
-		StopFinderEndpoint:       "XML_STOP_FINDER_REQUEST",
+		StopFinderEndpoint:       "XML_STOPFINDER_REQUEST",
 		TripEndpoint:             "XML_TRIP_REQUEST",
 	},
 }
