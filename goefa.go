@@ -31,6 +31,8 @@ import (
 	_ "code.google.com/p/go-charset/data"
 )
 
+// EFAProvider represents a public transport company that provides access to
+// its EFA instance. Use providers.json to store a list of known providers.
 type EFAProvider struct {
 	Name string
 
@@ -42,7 +44,7 @@ type EFAProvider struct {
 	EnableRealtime bool
 }
 
-// FindStop queries the EFA StopFinder API for the corresponding provider and
+// FindStop queries the EFA StopFinder API of the corresponding provider and
 // returns
 // - whether the stop was identified/unique (bool)
 // - an array of matched stops (or only the identified one)
