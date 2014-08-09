@@ -31,8 +31,6 @@ import (
 	"code.google.com/p/go-charset/charset"
 )
 
-// Stop represents an EFA Stop
-type Stop struct {
 	Id       int    `xml:"id,attr"`
 	Name     string `xml:"objectName,attr"`
 	Locality string `xml:"locality,attr"`
@@ -46,11 +44,13 @@ type Stop struct {
 	//ServingLines []ServingLine
 
 	Provider *EFAProvider
+type EFAStop struct {
 }
 
 // Performs a stateless dm_request for the represented stop and returns an
 // array of departures.
-func (stop *Stop) Departures(time time.Time, results int) ([]*EFADeparture, error) {
+func (stop *EFAStop) Departures(time time.Time, results int) (
+	[]*EFADeparture, error) {
 
 	params := url.Values{
 		"type_dm":              {"any"},

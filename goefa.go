@@ -44,7 +44,7 @@ type EFAProvider struct {
 
 // FindStop queries the EFA StopFinder API and returns a list of stops
 // or a single identified stop that where matched by the given name
-func (efa *EFAProvider) FindStop(name string) (bool, []*Stop, error) {
+func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 
 	// Struct for unmarshaling StopFinderRequest into
 	type stopFinderRequest struct {
@@ -52,8 +52,8 @@ func (efa *EFAProvider) FindStop(name string) (bool, []*Stop, error) {
 			OdvPlace struct {
 			}
 			OdvName struct {
-				State string  `xml:"state,attr"`
-				Stops []*Stop `xml:"odvNameElem"`
+				State string     `xml:"state,attr"`
+				Stops []*EFAStop `xml:"odvNameElem"`
 			} `xml:"itdOdvName"`
 		} `xml:"itdStopFinderRequest>itdOdv"`
 	}
@@ -110,6 +110,6 @@ func (efa *EFAProvider) FindStop(name string) (bool, []*Stop, error) {
 
 }
 
-func (efa *EFAProvider) Trip(origin Stop, via Stop, destination Stop, time time.Time) error {
+func (efa *EFAProvider) Trip(origin EFAStop, via EFAStop, destination EFAStop, time time.Time) error {
 	return nil
 }

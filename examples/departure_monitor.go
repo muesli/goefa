@@ -40,7 +40,7 @@ func main() {
 
 	idtfd, stops, err := myprovider.FindStop(*query)
 
-	var mystop *goefa.Stop
+	var mystop *goefa.EFAStop
 
 	if err != nil {
 		log.Println(err)
