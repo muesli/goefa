@@ -23,10 +23,9 @@ package goefa
 import (
 	"encoding/xml"
 	"errors"
-	_ "fmt"
 	"net/http"
 	"net/url"
-	"strconv"
+	"time"
 
 	"code.google.com/p/go-charset/charset"
 	_ "code.google.com/p/go-charset/data"
@@ -43,69 +42,74 @@ type EFAProvider struct {
 	//FIXME: include general params for all requests (e.g. useRealtime, ...)
 }
 
-//FIXME: separate goefa structs (like Station) and XML structs
-func (efa *EFAProvider) FindStop(name string) (*StopInfo, error) {
-	// FindStop queries the stopfinder API and returns Stops matching 'name'
+// FindStop queries the EFA StopFinder API and returns a list of stops
+// or a single identified stop that where matched by the given name
+func (efa *EFAProvider) FindStop(name string) (bool, []*Stop, error) {
+
+	// Struct for unmarshaling StopFinderRequest into
+	type stopFinderRequest struct {
+		Odv struct {
+			OdvPlace struct {
+			}
+			OdvName struct {
+				State string  `xml:"state,attr"`
+				Stops []*Stop `xml:"odvNameElem"`
+			} `xml:"itdOdvName"`
+		} `xml:"itdStopFinderRequest>itdOdv"`
+	}
+
+	// To get a more detailed response from the StopFinder request we can use
+	// EFAs LocationServer (locationServerActive=1, type_sf=any). To limit the
+	// results to a specific type we can use anyObjFilter_sf=<bitmask> as
+	// following:
+	//	0 any type
+	//	1 locations
+	//	2 stations
+	//	4 streets
+	//	8 addresses
+	//	16 crossroads
+	//	32 POIs
+	//	64 postal codes
+	// "stations and streets" results in 2 + 4 = 6
 
 	params := url.Values{
-		"type_sf":              {"stop"},
+		"type_sf":              {"any"},
 		"name_sf":              {name},
-		"locationServerActive": {"1"},
 		"outputFormat":         {"XML"},
 		"stateless":            {"1"},
-		// "limit":                {"5"},
-		// "mode":                 {"direct"},
+		"locationServerActive": {"1"},
+		"anyObjFilter_sf":      {"2"},
 	}
 
 	resp, err := http.PostForm(efa.BaseURL+efa.StopFinderEndpoint, params)
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 	defer resp.Body.Close()
 
-	var result StopResult
+	var result stopFinderRequest
+
 	decoder := xml.NewDecoder(resp.Body)
 	decoder.CharsetReader = charset.NewReader
 	if err = decoder.Decode(&result); err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
-	if result.Stop.State != "identified" {
-		return nil, errors.New("Stop does not exist or name is not unique!")
+	for _, stop := range result.Odv.OdvName.Stops {
+		stop.Provider = efa
 	}
 
-	return &result.Stop, nil
+	switch result.Odv.OdvName.State {
+	case "identified":
+		return true, result.Odv.OdvName.Stops, nil
+	case "list":
+		return false, result.Odv.OdvName.Stops, nil
+	default:
+		return false, nil, errors.New("no matched stops")
+	}
+
 }
 
-//FIXME: turn station_id into an int
-func (efa *EFAProvider) Departures(station *StopInfo, results int) ([]Departure, error) {
-	params := url.Values{
-		"type_dm":              {"stop"},
-		"name_dm":              {strconv.Itoa(station.IdfdStop.StopID)},
-		"useRealtime":          {"1"},
-		"locationServerActive": {"1"},
-		"dmLineSelection":      {"all"},
-		"limit":                {strconv.Itoa(results)},
-		"mode":                 {"direct"},
-	}
-
-	resp, err := http.PostForm(efa.BaseURL+efa.DepartureMonitorEndpoint, params)
-	if err != nil {
-		return []Departure{}, err
-	}
-	defer resp.Body.Close()
-
-	var result StopResult
-	decoder := xml.NewDecoder(resp.Body)
-	decoder.CharsetReader = charset.NewReader
-	if err = decoder.Decode(&result); err != nil {
-		return []Departure{}, err
-	}
-	//fmt.Printf("%+v", result)
-
-	if result.Stop.State != "identified" {
-		return []Departure{}, errors.New("Stop does not exist or name is not unique!")
-	}
-
-	return result.Departures, nil
+func (efa *EFAProvider) Trip(origin Stop, via Stop, destination Stop, time time.Time) error {
+	return nil
 }
