@@ -32,11 +32,17 @@ import (
 
 func main() {
 
-	query := flag.String("name", "Koenigsplatz", "the name to search for")
-	results := flag.Int("results", 5, "how many results to show")
+	pname := flag.String("provider", "avv", "Short name for the EFA Provider")
+	query := flag.String("stop", "Koenigsplatz", "The stop name to search for")
+	results := flag.Int("results", 5, "How many results to show")
 	flag.Parse()
 
-	myprovider := goefa.Providers["avv"]
+	myprovider, err := goefa.ProviderFromJson(*pname)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	idtfd, stops, err := myprovider.FindStop(*query)
 

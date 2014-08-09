@@ -20,6 +20,34 @@
 
 package goefa
 
+import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+)
+
+// ProviderFromJson parses providers.json. If a json object matches short_name
+// a pointer to the corresponding EFAProvider is returned.
+func ProviderFromJson(short_name string) (*EFAProvider, error) {
+
+	content, err := ioutil.ReadFile("providers.json")
+
+	if err != nil {
+		return nil, err
+	}
+
+	var providers map[string]*EFAProvider
+	json.Unmarshal(content, &providers)
+
+	provider, contains := providers[short_name]
+
+	if contains == false {
+		return nil, errors.New("Provider '" + short_name + "' not found.")
+	}
+
+	return provider, nil
+}
+
 // Map of supported EFA providers
 var Providers = map[string]EFAProvider{
 
