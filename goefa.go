@@ -39,7 +39,7 @@ type EFAProvider struct {
 	StopFinderEndpoint       string
 	TripEndpoint             string
 
-	//FIXME: include general params for all requests (e.g. useRealtime, ...)
+	EnableRealtime bool
 }
 
 // FindStop queries the EFA StopFinder API for the corresponding provider and

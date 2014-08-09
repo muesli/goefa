@@ -48,11 +48,19 @@ type EFAStop struct {
 func (stop *EFAStop) Departures(time time.Time, results int) (
 	[]*EFADeparture, error) {
 
+	var rt string
+
+	if stop.Provider.EnableRealtime == true {
+		rt = "1"
+	} else {
+		rt = "0"
+	}
+
 	params := url.Values{
 		"type_dm":              {"any"},
 		"name_dm":              {strconv.Itoa(stop.Id)},
 		"locationServerActive": {"1"},
-		"useRealtime":          {"1"},
+		"useRealtime":          {rt},
 		"dmLineSelection":      {"all"}, //FIXME enable line selection
 		"limit":                {strconv.Itoa(results)},
 		"mode":                 {"direct"},

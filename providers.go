@@ -29,6 +29,7 @@ var Providers = map[string]EFAProvider{
 		DepartureMonitorEndpoint: "XML_DM_REQUEST",
 		StopFinderEndpoint:       "XML_STOPFINDER_REQUEST",
 		TripEndpoint:             "XML_TRIP_REQUEST",
+		EnableRealtime:           true,
 	},
 
 	"mvv": EFAProvider{
@@ -37,5 +38,6 @@ var Providers = map[string]EFAProvider{
 		DepartureMonitorEndpoint: "XML_DM_REQUEST",
 		StopFinderEndpoint:       "XML_STOPFINDER_REQUEST",
 		TripEndpoint:             "XML_TRIP_REQUEST",
+		EnableRealtime:           true,
 	},
 }
