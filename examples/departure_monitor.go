@@ -46,6 +46,11 @@ func main() {
 
 	idtfd, stops, err := myprovider.FindStop(*query)
 
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	var mystop *goefa.EFAStop
 
 	if err != nil {
