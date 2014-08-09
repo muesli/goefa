@@ -15,7 +15,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *    Authors:
- *      Michael Wendland <michiwend@michiwend.com>
+ *      Michael Wendland <michael@michiwend.com>
  */
 
 package goefa
