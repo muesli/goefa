@@ -20,43 +20,96 @@
 
 package goefa
 
-type DateTimeType struct {
-	Date struct {
-		Day   int `xml:"day,attr"`
-		Month int `xml:"month,attr"`
-		Year  int `xml:"year,attr"`
-	} `xml:"itdDate"`
+import (
+	"encoding/xml"
+	"time"
+)
 
-	Time struct {
-		Hour   int `xml:"hour,attr"`
-		Minute int `xml:"minute,attr"`
-	} `xml:"itdTime"`
+// Map to resolve ServingLine.MotType (Means Of Transport)
+var MOT = map[int]string{
+	0:  "Zug",
+	1:  "S-Bahn",
+	2:  "U-Bahn",
+	3:  "Stadtbahn",
+	4:  "Straßen-/Trambahn",
+	5:  "Stadtbus",
+	6:  "Regionalbus",
+	7:  "Schnellbus",
+	8:  "Seil-/Zahnradbahn",
+	9:  "Schiff",
+	10: "AST/Rufbus",
+	11: "Sonstige",
 }
 
-type Line struct {
-	Number    string `xml:"number,attr"`
-	Direction string `xml:"direction,attr"`
+// EFATime implements UnmarshalXML to support unmarshalling EFAs XML DateTime
+// type directly into a time.Time compatible type
+type EFATime struct {
+	*time.Time
 }
 
-type Departure struct {
-	Countdown int    `xml:"countdown,attr"`
-	Platform  string `xml:"platform,attr"`
+func (t *EFATime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
-	DateTime    DateTimeType `xml:"itdDateTime"`
-	ServingLine Line         `xml:"itdServingLine"`
+	type efaDateTime struct {
+		Date struct {
+			Day   int `xml:"day,attr"`
+			Month int `xml:"month,attr"`
+			Year  int `xml:"year,attr"`
+		} `xml:"itdDate"`
+
+		Time struct {
+			Hour   int `xml:"hour,attr"`
+			Minute int `xml:"minute,attr"`
+		} `xml:"itdTime"`
+	}
+
+	var content efaDateTime
+
+	if err := d.DecodeElement(&content, &start); err != nil {
+		return err
+	}
+
+	loc, err := time.LoadLocation("Local")
+
+	if err != nil {
+		return err
+	}
+
+	tmp := time.Date(content.Date.Year,
+		time.Month(content.Date.Month),
+		content.Date.Day,
+		content.Time.Hour,
+		content.Time.Minute,
+		0,
+		0,
+		loc)
+
+	t.Time = &tmp
+
+	return nil
 }
 
-type StopInfo struct {
-	State string `xml:"state,attr"`
-
-	IdfdStop struct {
-		StopName  string `xml:",chardata"`
-		MatchQlty int    `xml:"matchQuality,attr"`
-		StopID    int    `xml:"stopID,attr"`
-	} `xml:"odvNameElem"`
+type EFAServingLine struct {
+	Number     string `xml:"number,attr"`
+	Direction  string `xml:"direction,attr"`
+	MotType    int    `xml:"motType,attr"`
+	DestStopID int    `xml:"destID"` //FIXME assign EFAStop
 }
 
-type StopResult struct {
-	Stop       StopInfo    `xml:"itdDepartureMonitorRequest>itdOdv>itdOdvName"`
-	Departures []Departure `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
+type EFADeparture struct {
+	Countdown   int            `xml:"countdown,attr"`
+	Platform    string         `xml:"platform,attr"`
+	DateTime    EFATime        `xml:"itdDateTime"`
+	ServingLine EFAServingLine `xml:"itdServingLine"`
+}
+
+type efaDepartureMonitorRequest struct {
+	Odv struct {
+		OdvPlace struct {
+		}
+		OdvName struct {
+			State string `xml:"state,attr"`
+		} `xml:"itdOdvName"`
+	} `xml:"itdDepartureMonitorRequest>itdOdv"`
+
+	Departures []*EFADeparture `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
