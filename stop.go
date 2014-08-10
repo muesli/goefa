@@ -32,13 +32,14 @@ import (
 )
 
 type EFAStop struct {
-	Id             int    `xml:"id,attr"`
-	Name           string `xml:"objectName,attr"`
-	Locality       string `xml:"locality,attr"`
-	IsTransferStop bool   `xml:"isTransferStop,attr"`
-	Provider       *EFAProvider
+	Id             int     `xml:"id,attr"`
+	Name           string  `xml:"objectName,attr"`
+	Locality       string  `xml:"locality,attr"`
+	Lat            float64 `xml:"x,attr"`
+	Lng            float64 `xml:"y,attr"`
+	IsTransferStop bool    `xml:"isTransferStop,attr"`
 
-	//FIXME include coordinates
+	Provider *EFAProvider
 }
 
 // Departures performs a stateless dm_request for the corresponding EFAStop and

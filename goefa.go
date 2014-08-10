@@ -84,6 +84,7 @@ func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 		"stateless":            {"1"},
 		"locationServerActive": {"1"},
 		"anyObjFilter_sf":      {"2"},
+		"coordOutputFormat":    {"WGS84[DD.ddddd]"},
 	}
 
 	resp, err := http.PostForm(efa.BaseURL+efa.StopFinderEndpoint, params)
