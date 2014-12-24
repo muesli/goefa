@@ -1,8 +1,14 @@
 goefa
 =====
 
-someday this is going to be a golang client for EFA (Elektronische Fahrplan Auskunft)
+package goefa implements a go (golang) client library to access data of public
+transport companies which provide an EFA interface. You can search a stop, get
+its next departures or request a trip.
 
+![goefa](misc/goefa.png)
+
+
+## Installation
 run
 
 ```bash
