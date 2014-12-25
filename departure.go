@@ -61,7 +61,6 @@ type departureMonitorResult struct {
 			State string `xml:"state,attr"`
 		} `xml:"itdOdvName"`
 	} `xml:"itdDepartureMonitorRequest>itdOdv"`
-
 	Departures []*EFADeparture `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
 
@@ -69,6 +68,10 @@ func (d *departureMonitorResult) endpoint() string {
 	return "XML_DM_REQUEST"
 }
 
+// Departures performs a stateless dm_request for the corresponding stopID and
+// returns an array of EFADepartures. Use time.Now() as the second argument in
+// order to get the very next departures. The third argument determines how
+// many results will be returned by EFA.
 func (efa *EFAProvider) Departures(stopID int, due time.Time, results int) ([]*EFADeparture, error) {
 	var rt string
 

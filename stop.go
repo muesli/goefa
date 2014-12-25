@@ -37,10 +37,8 @@ type EFAStop struct {
 	Provider *EFAProvider
 }
 
-// Departures performs a stateless dm_request for the corresponding EFAStop and
-// returns an array of EFADepartures. Use time.Now() as the first argument in
-// order to get the very next departures. The second argument determines how
-// many results will be returned by EFA
+// Departures is just a helper method and calls the Departures() method of
+// EFAProvider.
 func (stop *EFAStop) Departures(due time.Time, results int) ([]*EFADeparture, error) {
 	return stop.Provider.Departures(stop.Id, due, results)
 }
@@ -62,10 +60,8 @@ func (s *stopFinderResult) endpoint() string {
 }
 
 // FindStop queries the EFA StopFinder API of the corresponding provider and
-// returns
-//	- whether the stop was identified/unique (bool)
-//	- an array of matched stops (or only the identified one)
-//	- an error in case somthing went wrong
+// returns whether the stop was identified/unique (bool), an array of matched
+// stops (or only the identified one) or an error in case somthing went wrong.
 func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 
 	// To get a more detailed response from the StopFinder request we can use
@@ -81,7 +77,6 @@ func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 	//	32 POIs
 	//	64 postal codes
 	// "stations and streets" results in 2 + 4 = 6
-
 	params := url.Values{
 		"type_sf":              {"any"},
 		"name_sf":              {name},

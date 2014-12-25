@@ -67,7 +67,10 @@ func (efa *EFAProvider) postRequest(result EFAResult, params url.Values) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("User-Agent", "GoEFA, a golang EFA client / 0.0.1 (https://github.com/michiwend/goefa)")
+	req.Header.Set(
+		"User-Agent",
+		"GoEFA, a golang EFA client / 0.0.1 (https://github.com/michiwend/goefa)",
+	)
 
 	resp, err := client.Do(req)
 	if err != nil {
