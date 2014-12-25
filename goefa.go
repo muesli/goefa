@@ -51,6 +51,25 @@ func (efa *EFAProvider) Trip(origin EFAStop, via EFAStop, destination EFAStop, t
 
 type EFAResult interface {
 	endpoint() string
+type efaResponse struct {
+	XMLName xml.Name `xml:"itdRequest"`
+
+	client     string `xml:"client,attr"`
+	clientIP   string `xml:"clientIP,attr"`
+	language   string `xml:"language,attr"`
+	lengthUnit string `xml:"lengthUnit,attr"`
+	now        string `xml:"now,attr"`
+	nowWD      int    `xml:"nowID,attr"`
+	serverID   string `xml:"serverID,attr"`
+	sessionID  int    `xml:"sessionID,attr"`
+	version    string `xml:"version,attr"`
+	virtDir    string `xml:"virtDir,attr"`
+
+	VersionInfo struct {
+		AppVersion string `xml:"ptKernel>appVersion"`
+		DataFormat string `xml:"ptKernel>dataFormat"`
+		DataBuild  string `xml:"ptKernel>dataBuild"`
+	} `xml:"itdVersionInfo"`
 }
 
 func (efa *EFAProvider) postRequest(result EFAResult, params url.Values) error {

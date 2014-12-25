@@ -44,7 +44,7 @@ func (stop *EFAStop) Departures(due time.Time, results int) ([]*EFADeparture, er
 }
 
 type stopFinderResult struct {
-	//TODO XMLName
+	efaResponse
 	Odv struct {
 		OdvPlace struct {
 		}

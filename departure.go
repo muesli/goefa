@@ -54,6 +54,7 @@ type EFADeparture struct {
 }
 
 type departureMonitorResult struct {
+	efaResult
 	Odv struct {
 		OdvPlace struct {
 		}
