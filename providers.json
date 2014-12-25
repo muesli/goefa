@@ -1,21 +1,20 @@
 {
 
     "avv": {
-        "Name":                     "Augsburger Verkehrs- und Tarifverbund GmbH",
-        "BaseURL":                  "http://efa.avv-augsburg.de/avv/",
-        "DepartureMonitorEndpoint": "XML_DM_REQUEST",
-        "StopFinderEndpoint":       "XML_STOPFINDER_REQUEST",
-        "TripEndpoint":             "XML_TRIP_REQUEST",
-        "EnableRealtime":           true
+        "Name":           "Augsburger Verkehrs- und Tarifverbund GmbH",
+        "BaseURL":        "http://efa.avv-augsburg.de/avv/",
+        "EnableRealtime": true
     },
 
     "mvv": {
-        "Name":                     "Münchner Verkehrs- und Tarifverbund GmbH",
-        "BaseURL":                  "http://efa.mvv-muenchen.de/mvv/",
-        "DepartureMonitorEndpoint": "XML_DM_REQUEST",
-        "StopFinderEndpoint":       "XML_STOPFINDER_REQUEST",
-        "TripEndpoint":             "XML_TRIP_REQUEST",
-        "EnableRealtime":           true
-    }
+        "Name":           "Münchner Verkehrs- und Tarifverbund GmbH",
+        "BaseURL":        "http://efa.mvv-muenchen.de/mvv/",
+        "EnableRealtime": true
+    },
 
+    "test": {
+        "Name":           "test instance",
+        "BaseURL":        "http://localhost:8080",
+        "EnableRealtime": true
+    }
 }

@@ -25,22 +25,6 @@ import (
 	"time"
 )
 
-// Map to resolve ServingLine.MotType (Means Of Transport)
-var MOT = map[int]string{
-	0:  "Zug",
-	1:  "S-Bahn",
-	2:  "U-Bahn",
-	3:  "Stadtbahn",
-	4:  "Straßen-/Trambahn",
-	5:  "Stadtbus",
-	6:  "Regionalbus",
-	7:  "Schnellbus",
-	8:  "Seil-/Zahnradbahn",
-	9:  "Schiff",
-	10: "AST/Rufbus",
-	11: "Sonstige",
-}
-
 // EFATime implements UnmarshalXML to support unmarshalling EFAs XML DateTime
 // type directly into a time.Time compatible type
 type EFATime struct {
@@ -86,30 +70,4 @@ func (t *EFATime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	t.Time = &tmp
 
 	return nil
-}
-
-type EFAServingLine struct {
-	Number     string `xml:"number,attr"`
-	Direction  string `xml:"direction,attr"`
-	MotType    int    `xml:"motType,attr"`
-	DestStopID int    `xml:"destID"` //FIXME assign EFAStop
-}
-
-type EFADeparture struct {
-	Countdown   int            `xml:"countdown,attr"`
-	Platform    string         `xml:"platform,attr"`
-	DateTime    EFATime        `xml:"itdDateTime"`
-	ServingLine EFAServingLine `xml:"itdServingLine"`
-}
-
-type efaDepartureMonitorRequest struct {
-	Odv struct {
-		OdvPlace struct {
-		}
-		OdvName struct {
-			State string `xml:"state,attr"`
-		} `xml:"itdOdvName"`
-	} `xml:"itdDepartureMonitorRequest>itdOdv"`
-
-	Departures []*EFADeparture `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
