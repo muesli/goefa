@@ -31,7 +31,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"time"
 
 	"code.google.com/p/go-charset/charset"
 	_ "code.google.com/p/go-charset/data"
@@ -45,8 +44,6 @@ type EFAProvider struct {
 	EnableRealtime bool
 }
 
-func (efa *EFAProvider) Trip(origin EFAStop, via EFAStop, destination EFAStop, time time.Time) error {
-	return nil
 }
 
 type EFAResult interface {
