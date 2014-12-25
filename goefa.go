@@ -44,10 +44,10 @@ type EFAProvider struct {
 	EnableRealtime bool
 }
 
+type efaResult interface {
+	endpoint() string
 }
 
-type EFAResult interface {
-	endpoint() string
 type efaResponse struct {
 	XMLName xml.Name `xml:"itdRequest"`
 
@@ -69,7 +69,7 @@ type efaResponse struct {
 	} `xml:"itdVersionInfo"`
 }
 
-func (efa *EFAProvider) postRequest(result EFAResult, params url.Values) error {
+func (efa *EFAProvider) postRequest(result efaResult, params url.Values) error {
 
 	client := http.Client{}
 
