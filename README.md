@@ -35,4 +35,10 @@ idtfd, stops, err := myprovider.FindStop("Königsplatz")
 deps, err := stops[0].Departures(time.Now(), 5)
 ```
 
+## Adding new providers
+
+Edit the providers.json file to add new EFA providers. The german [wikipedia article on EFA](https://de.wikipedia.org/wiki/Elektronische_Fahrplanauskunft_%28Software%29) contains some hints at providers etc.
+
+## Links
+
 [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/michiwend/goefa)
