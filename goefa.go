@@ -48,19 +48,19 @@ type efaResult interface {
 	endpoint() string
 }
 
-type efaResponse struct {
+type EFAResponse struct {
 	XMLName xml.Name `xml:"itdRequest"`
 
-	client     string `xml:"client,attr"`
-	clientIP   string `xml:"clientIP,attr"`
-	language   string `xml:"language,attr"`
-	lengthUnit string `xml:"lengthUnit,attr"`
-	now        string `xml:"now,attr"`
-	nowWD      int    `xml:"nowID,attr"`
-	serverID   string `xml:"serverID,attr"`
-	sessionID  int    `xml:"sessionID,attr"`
-	version    string `xml:"version,attr"`
-	virtDir    string `xml:"virtDir,attr"`
+	Client     string `xml:"client,attr"`
+	ClientIP   string `xml:"clientIP,attr"`
+	Language   string `xml:"language,attr"`
+	LengthUnit string `xml:"lengthUnit,attr"`
+	Now        string `xml:"now,attr"`
+	NowWD      int    `xml:"nowID,attr"`
+	ServerID   string `xml:"serverID,attr"`
+	SessionID  int    `xml:"sessionID,attr"`
+	Version    string `xml:"version,attr"`
+	VirtDir    string `xml:"virtDir,attr"`
 
 	VersionInfo struct {
 		AppVersion string `xml:"ptKernel>appVersion"`
