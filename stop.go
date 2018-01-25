@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,6 +17,7 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 package goefa
@@ -23,34 +25,40 @@ package goefa
 import (
 	"errors"
 	"net/url"
+	"strconv"
 	"time"
 )
 
-type EFAStop struct {
-	Id             int     `xml:"id,attr"`
+// Stop represents a public transportation stop
+type Stop struct {
+	ID             int
+	Name           string
+	Locality       string
+	Lat            float64
+	Lng            float64
+	IsTransferStop bool
+
+	Provider *Provider
+}
+
+type stopResult struct {
+	ID             int     `xml:"id,attr"`
 	Name           string  `xml:"objectName,attr"`
+	ValueName      string  `xml:",chardata"`
 	Locality       string  `xml:"locality,attr"`
 	Lat            float64 `xml:"x,attr"`
 	Lng            float64 `xml:"y,attr"`
 	IsTransferStop bool    `xml:"isTransferStop,attr"`
-
-	Provider *EFAProvider
-}
-
-// Departures is just a helper method and calls the Departures() method of
-// EFAProvider.
-func (stop *EFAStop) Departures(due time.Time, results int) ([]*EFADeparture, error) {
-	return stop.Provider.Departures(stop.Id, due, results)
 }
 
 type stopFinderResult struct {
-	EFAResponse
+	Response
 	Odv struct {
 		OdvPlace struct {
 		}
 		OdvName struct {
-			State string     `xml:"state,attr"`
-			Stops []*EFAStop `xml:"odvNameElem"`
+			State string        `xml:"state,attr"`
+			Stops []*stopResult `xml:"odvNameElem"`
 		} `xml:"itdOdvName"`
 	} `xml:"itdStopFinderRequest>itdOdv"`
 }
@@ -60,10 +68,9 @@ func (s *stopFinderResult) endpoint() string {
 }
 
 // FindStop queries the EFA StopFinder API of the corresponding provider and
-// returns whether the stop was identified/unique (bool), an array of matched
-// stops (or only the identified one) or an error in case somthing went wrong.
-func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
-
+// returns an array of matched stops (or only the identified one) or an error
+// in case somthing went wrong.
+func (efa *Provider) FindStop(name string) ([]*Stop, error) {
 	// To get a more detailed response from the StopFinder request we can use
 	// EFAs LocationServer (locationServerActive=1, type_sf=any). To limit the
 	// results to a specific type we can use anyObjFilter_sf=<bitmask> as
@@ -88,22 +95,75 @@ func (efa *EFAProvider) FindStop(name string) (bool, []*EFAStop, error) {
 	}
 
 	var result stopFinderResult
-
 	if err := efa.postRequest(&result, params); err != nil {
-		return false, nil, err
+		return nil, err
 	}
 
+	stops := []*Stop{}
 	for _, stop := range result.Odv.OdvName.Stops {
-		stop.Provider = efa
+		stops = append(stops, &Stop{
+			ID:             stop.ID,
+			Name:           stop.Name,
+			Locality:       stop.Locality,
+			Lat:            stop.Lat,
+			Lng:            stop.Lng,
+			IsTransferStop: stop.IsTransferStop,
+			Provider:       efa,
+		})
 	}
 
 	switch result.Odv.OdvName.State {
 	case "identified":
-		return true, result.Odv.OdvName.Stops, nil
+		fallthrough
 	case "list":
-		return false, result.Odv.OdvName.Stops, nil
+		return stops, nil
 	default:
-		return false, nil, errors.New("no matched stops")
+		return nil, errors.New("no matched stops")
+	}
+}
+
+// Stop queries the EFA StopFinder API of the corresponding provider for a stop
+// with a specific ID.
+func (efa *Provider) Stop(id int) (*Stop, error) {
+	params := url.Values{
+		"type_sf":              {"stopID"},
+		"name_sf":              {strconv.FormatInt(int64(id), 10)},
+		"outputFormat":         {"XML"},
+		"stateless":            {"1"},
+		"locationServerActive": {"1"},
+		"anyObjFilter_sf":      {"2"},
+		"coordOutputFormat":    {"WGS84[DD.ddddd]"},
 	}
 
+	var result stopFinderResult
+	if err := efa.postRequest(&result, params); err != nil {
+		return nil, err
+	}
+
+	if len(result.Odv.OdvName.Stops) > 0 {
+		switch result.Odv.OdvName.State {
+		case "identified":
+			return &Stop{
+				ID:             result.Odv.OdvName.Stops[0].ID,
+				Name:           result.Odv.OdvName.Stops[0].ValueName,
+				Locality:       result.Odv.OdvName.Stops[0].Locality,
+				Lat:            result.Odv.OdvName.Stops[0].Lat,
+				Lng:            result.Odv.OdvName.Stops[0].Lng,
+				IsTransferStop: result.Odv.OdvName.Stops[0].IsTransferStop,
+				Provider:       efa,
+			}, nil
+		}
+	}
+	return nil, errors.New("no matched stops")
+}
+
+// Departures is just a helper method and calls the Departures() method of the
+// Provider.
+func (stop *Stop) Departures(due time.Time, results int) ([]*Departure, error) {
+	return stop.Provider.Departures(stop.ID, due, results)
+}
+
+// Route is just a helper method and calls the Route() method of the Provider.
+func (stop *Stop) Route(destination int, due time.Time) ([]*Route, error) {
+	return stop.Provider.Route(stop.ID, destination, due)
 }
