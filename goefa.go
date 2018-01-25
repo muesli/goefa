@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,17 +17,20 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 /*
-package goefa implements a go (golang) client library to access data of public
+Package goefa implements a go (golang) client library to access data of public
 transport companies which provide an EFA interface. You can search a stop, get
 its next departures or request a trip.
 */
 package goefa
 
 import (
+	"bytes"
 	"encoding/xml"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -36,70 +40,46 @@ import (
 	_ "github.com/rogpeppe/go-charset/data"
 )
 
-// EFAProvider represents a public transport company that provides access to
-// its EFA instance. Use providers.json to store a list of known providers.
-type EFAProvider struct {
-	Name           string
-	BaseURL        string //FIXME use url.URL
-	EnableRealtime bool
-}
-
-type efaResult interface {
+type efaEndpoint interface {
 	endpoint() string
 }
 
-type EFAResponse struct {
-	XMLName xml.Name `xml:"itdRequest"`
-
-	Client     string `xml:"client,attr"`
-	ClientIP   string `xml:"clientIP,attr"`
-	Language   string `xml:"language,attr"`
-	LengthUnit string `xml:"lengthUnit,attr"`
-	Now        string `xml:"now,attr"`
-	NowWD      int    `xml:"nowID,attr"`
-	ServerID   string `xml:"serverID,attr"`
-	SessionID  int    `xml:"sessionID,attr"`
-	Version    string `xml:"version,attr"`
-	VirtDir    string `xml:"virtDir,attr"`
-
-	VersionInfo struct {
-		AppVersion string `xml:"ptKernel>appVersion"`
-		DataFormat string `xml:"ptKernel>dataFormat"`
-		DataBuild  string `xml:"ptKernel>dataBuild"`
-	} `xml:"itdVersionInfo"`
-}
-
-func (efa *EFAProvider) postRequest(result efaResult, params url.Values) error {
-
+func (efa *Provider) postRequest(result efaEndpoint, params url.Values) error {
 	client := http.Client{}
-
-	reqUrl, err := url.Parse(efa.BaseURL)
+	reqURL, err := url.Parse(efa.BaseURL)
 	if err != nil {
 		return err
 	}
-	reqUrl.Path = path.Join(reqUrl.Path, result.endpoint())
+	reqURL.Path = path.Join(reqURL.Path, result.endpoint())
 
-	req, err := http.NewRequest("POST", reqUrl.String(), strings.NewReader(params.Encode()))
+	req, err := http.NewRequest("POST", reqURL.String(), strings.NewReader(params.Encode()))
 	if err != nil {
 		return err
 	}
 	req.Header.Set(
 		"User-Agent",
-		"GoEFA, a golang EFA client / 0.0.1 (https://github.com/michiwend/goefa)",
+		"GoEFA, a golang EFA client / 0.0.1 (https://github.com/muesli/goefa)",
 	)
 
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close() // FIXME, refer to http://golang.org/pkg/net/http/#NewRequest
+	defer resp.Body.Close()
 	defer req.Body.Close()
 
-	decoder := xml.NewDecoder(resp.Body)
+	b, _ := ioutil.ReadAll(resp.Body)
+	// fmt.Println(string(b))
+
+	decoder := xml.NewDecoder(bytes.NewReader(b))
 	decoder.CharsetReader = charset.NewReader
-	if err = decoder.Decode(result); err != nil {
-		return err
+	return decoder.Decode(result)
+}
+
+func replaceEmptyWithNA(s string) string {
+	if strings.TrimSpace(s) == "" {
+		return "n/a"
 	}
 
-	return nil
+	return s
 }
