@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,6 +17,7 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 package goefa
@@ -28,11 +30,11 @@ import (
 // EFATime implements UnmarshalXML to support unmarshalling EFAs XML DateTime
 // type directly into a time.Time compatible type
 type EFATime struct {
-	*time.Time
+	time.Time
 }
 
+// UnmarshalXML is a custom XML decoding method for EFATime
 func (t *EFATime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-
 	type efaDateTime struct {
 		Date struct {
 			Day   int `xml:"day,attr"`
@@ -47,13 +49,11 @@ func (t *EFATime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	}
 
 	var content efaDateTime
-
 	if err := d.DecodeElement(&content, &start); err != nil {
 		return err
 	}
 
 	loc, err := time.LoadLocation("Local")
-
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (t *EFATime) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		0,
 		loc)
 
-	t.Time = &tmp
+	t.Time = tmp
 
 	return nil
 }
