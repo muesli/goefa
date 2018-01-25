@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,43 +17,21 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 package goefa
 
-var MOTMap = map[int]string{
-	0:  "Zug",
-	1:  "S-Bahn",
-	2:  "U-Bahn",
-	3:  "Stadtbahn",
-	4:  "Straßen-/Trambahn",
-	5:  "Stadtbus",
-	6:  "Regionalbus",
-	7:  "Schnellbus",
-	8:  "Seil-/Zahnradbahn",
-	9:  "Schiff",
-	10: "AST/Rufbus",
-	11: "Sonstige",
-}
-
-type EFAMotType int
-
-func (e *EFAMotType) String() string {
-	return MOTMap[int(*e)]
-}
-
-type EFAServingLine struct {
-	ROP       int    `xml:"ROP,attr"`
-	STT       int    `xml:"displayName,attr"`
-	TTB       int    `xml:"TTB,attr"`
-	Code      int    `xml:"code,attr"`
-	Compound  int    `xml:"compound,attr"`
-	DestID    int    `xml:"destID,attr"`
-	Direction string `xml:"direction,attr"`
-	Index     string `xml:"index,attr"`
-	Number    string `xml:"number,attr"`
-
-	MotType EFAMotType `xml:"motType,attr"`
-
-	DestStopID int `xml:"destID"` //FIXME assign EFAStop
+// ServingLine holds the data for a public transportation line
+type ServingLine struct {
+	// ROP        int    `xml:"ROP,attr"`
+	// STT        int    `xml:"displayName,attr"`
+	// TTB        int    `xml:"TTB,attr"`
+	// Compound   int    `xml:"compound,attr"`
+	// Code       int    `xml:"code,attr"`
+	// Index      string `xml:"index,attr"`
+	Number     string  `xml:"number,attr"`
+	Direction  string  `xml:"direction,attr"`
+	DestStopID int     `xml:"destID,attr"`
+	MotType    MotType `xml:"motType,attr"`
 }
