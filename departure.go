@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,6 +17,7 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 package goefa
@@ -26,35 +28,37 @@ import (
 	"time"
 )
 
-// EFADepartureArrival represents either an arrival or a departure and is not
-// directly used but embedded by EFAArrival and EFADeparture.
-type EFADepartureArrival struct {
-	Area         int    `xml:"area,attr"`
-	Countdown    int    `xml:"countdown,attr"`
+// Departure represents a single departure for a specific stop.
+type Departure struct {
+	CountDown    int         // minutes until departure
+	MapLink      string      // link to map
+	Platform     string      // platform code
+	PlatformName string      // platform name
+	StopID       int         // ID of the stop
+	StopName     string      // name of the stop
+	Lat          int64       // Latitude
+	Lng          int64       // Longitude
+	DateTime     time.Time   // Timestamp of departure
+	ServingLine  ServingLine // Line
+}
+
+type departureResult struct {
+	// Area         int    `xml:"area,attr"`
+	CountDown    int    `xml:"countdown,attr"`
 	MapName      string `xml:"mapName,attr"`
 	Platform     string `xml:"platform,attr"`
 	PlatformName string `xml:"platformName,attr"`
-	StopID       int    `xml:"displayName,attr"`
+	StopID       int    `xml:"stopID,attr"`
 	StopName     string `xml:"stopName,attr"`
 	Lat          int64  `xml:"x,attr"`
 	Lng          int64  `xml:"y,attr"`
 
-	DateTime    EFATime        `xml:"itdDateTime"`
-	ServingLine EFAServingLine `xml:"itdServingLine"`
-}
-
-// EFAArrival represents a single arrival for a specific stop.
-type EFAArrival struct {
-	EFADepartureArrival `xml:"itdArrival"`
-}
-
-// EFADeparture represents a single departure for a specific stop.
-type EFADeparture struct {
-	EFADepartureArrival `xml:"itdDeparture"`
+	DateTime    EFATime     `xml:"itdDateTime"`
+	ServingLine ServingLine `xml:"itdServingLine"`
 }
 
 type departureMonitorResult struct {
-	EFAResponse
+	Response
 	Odv struct {
 		OdvPlace struct {
 		}
@@ -62,7 +66,7 @@ type departureMonitorResult struct {
 			State string `xml:"state,attr"`
 		} `xml:"itdOdvName"`
 	} `xml:"itdDepartureMonitorRequest>itdOdv"`
-	Departures []*EFADeparture `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
+	Departures []*departureResult `xml:"itdDepartureMonitorRequest>itdDepartureList>itdDeparture"`
 }
 
 func (d *departureMonitorResult) endpoint() string {
@@ -70,16 +74,13 @@ func (d *departureMonitorResult) endpoint() string {
 }
 
 // Departures performs a stateless dm_request for the corresponding stopID and
-// returns an array of EFADepartures. Use time.Now() as the second argument in
+// returns an array of Departures. Use time.Now() as the second argument in
 // order to get the very next departures. The third argument determines how
 // many results will be returned by EFA.
-func (efa *EFAProvider) Departures(stopID int, due time.Time, results int) ([]*EFADeparture, error) {
-	var rt string
-
+func (efa *Provider) Departures(stopID int, due time.Time, results int) ([]*Departure, error) {
+	rt := "0"
 	if efa.EnableRealtime {
 		rt = "1"
-	} else {
-		rt = "0"
 	}
 
 	params := url.Values{
@@ -96,11 +97,26 @@ func (efa *EFAProvider) Departures(stopID int, due time.Time, results int) ([]*E
 	}
 
 	var result departureMonitorResult
-
 	if err := efa.postRequest(&result, params); err != nil {
 		return nil, err
 	}
 
-	return result.Departures, nil
+	var deps []*Departure
+	for _, dep := range result.Departures {
+		d := Departure{
+			CountDown:    dep.CountDown,
+			MapLink:      dep.MapName,
+			Platform:     dep.Platform,
+			PlatformName: dep.PlatformName,
+			StopID:       dep.StopID,
+			StopName:     dep.StopName,
+			Lat:          dep.Lat,
+			Lng:          dep.Lng,
+			DateTime:     dep.DateTime.Time,
+			ServingLine:  dep.ServingLine,
+		}
+		deps = append(deps, &d)
+	}
 
+	return deps, nil
 }
