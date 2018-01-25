@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2014 Michael Wendland
+ * Copyright (C) 2014      Michael Wendland
+ *               2014-2018 Christian Muehlhaeuser
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
@@ -16,34 +17,22 @@
  *
  * Authors:
  *   Michael Wendland <michael@michiwend.com>
+ *   Christian Muehlhaeuser <muesli@gmail.com>
  */
 
 package goefa
 
-import (
-	"encoding/json"
-	"errors"
-	"io/ioutil"
-)
+// Provider represents a public transport company that provides access to
+// its EFA instance. Use providers.json to store a list of known providers.
+type Provider struct {
+	BaseURL        string
+	EnableRealtime bool
+}
 
-// ProviderFromJson parses providers.json. If a json object matches short_name
-// a pointer to the corresponding EFAProvider is returned.
-func ProviderFromJson(short_name string) (*EFAProvider, error) {
-
-	content, err := ioutil.ReadFile("providers.json")
-
-	if err != nil {
-		return nil, err
+// NewProvider returns a new Provider with custom settings
+func NewProvider(baseurl string, realtime bool) *Provider {
+	return &Provider{
+		BaseURL:        baseurl,
+		EnableRealtime: realtime,
 	}
-
-	var providers map[string]*EFAProvider
-	json.Unmarshal(content, &providers)
-
-	provider, contains := providers[short_name]
-
-	if contains == false {
-		return nil, errors.New("Provider '" + short_name + "' not found.")
-	}
-
-	return provider, nil
 }
