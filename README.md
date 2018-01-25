@@ -29,7 +29,7 @@ Simple example on how to verify a stop and get the departures:
 provider := goefa.NewProvider("http://efa.mvv-muenchen.de/mvv/", true)
 
 // Find a stop by name
-stops, err := myprovider.FindStop("Königsplatz")
+stops, err := provider.FindStop("Königsplatz")
 
 // Get the 5 next departures for a stop
 deps, err := stops[0].Departures(time.Now(), 5)
