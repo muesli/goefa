@@ -43,6 +43,7 @@ type Stop struct {
 
 type stopResult struct {
 	ID             int     `xml:"id,attr"`
+	StopID         int     `xml:"stopID,attr"`
 	Name           string  `xml:"objectName,attr"`
 	ValueName      string  `xml:",chardata"`
 	Locality       string  `xml:"locality,attr"`
@@ -143,7 +144,7 @@ func (efa *Provider) Stop(id int) (*Stop, error) {
 	if len(result.Odv.OdvName.Stops) > 0 {
 		switch result.Odv.OdvName.State {
 		case "identified":
-			return &Stop{
+			stop := Stop{
 				ID:             result.Odv.OdvName.Stops[0].ID,
 				Name:           result.Odv.OdvName.Stops[0].ValueName,
 				Locality:       result.Odv.OdvName.Stops[0].Locality,
@@ -151,7 +152,12 @@ func (efa *Provider) Stop(id int) (*Stop, error) {
 				Lng:            result.Odv.OdvName.Stops[0].Lng,
 				IsTransferStop: result.Odv.OdvName.Stops[0].IsTransferStop,
 				Provider:       efa,
-			}, nil
+			}
+			if stop.ID == 0 {
+				stop.ID = result.Odv.OdvName.Stops[0].StopID
+			}
+
+			return &stop, nil
 		}
 	}
 	return nil, errors.New("no matched stops")
