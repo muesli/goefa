@@ -26,7 +26,7 @@ To compile it from source:
 Simple example on how to verify a stop and get the departures:
 ```go
 // create a new EFAProvider
-provider := goefa.NewProvider("http://efa.mvv-muenchen.de/mvv/", true)
+provider := goefa.NewProvider("https://efa.mvv-muenchen.de/mvv/", true)
 
 // Find a stop by name
 stops, err := provider.FindStop("Königsplatz")
@@ -43,8 +43,8 @@ routes, err := provider.Route(originStop.ID, destinationStop.ID, time.Now())
 
 | City          | Provider | Base URL                                |
 | ------------- | -------- | --------------------------------------- |
-| Augsburg      | AVV      | http://efa.avv-augsburg.de/avv/         |
-| Munich        | MVV      | http://efa.mvv-muenchen.de/mvv/         |
+| Augsburg      | AVV      | https://efa.avv-augsburg.de/avv/        |
+| Munich        | MVV      | https://efa.mvv-muenchen.de/mvv/        |
 
 The german [wikipedia article on EFA](https://de.wikipedia.org/wiki/Elektronische_Fahrplanauskunft_%28Software%29)
 contains more information about EFA and available providers.
