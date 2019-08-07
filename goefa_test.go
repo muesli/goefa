@@ -7,8 +7,8 @@ import (
 
 var (
 	providers = []*Provider{
-		NewProvider("http://efa.avv-augsburg.de/avv/", true),
-		NewProvider("http://efa.mvv-muenchen.de/mvv/", true),
+		NewProvider("https://efa.avv-augsburg.de/avv/", true),
+		NewProvider("https://efa.mvv-muenchen.de/mvv/", true),
 	}
 )
 
