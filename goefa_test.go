@@ -25,16 +25,24 @@ func TestStops(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		stop, err := tt.provider.Stop(tt.expectedID)
+		if err != nil {
+			t.Errorf("Stop not found %d: %s", tt.expectedID, err)
+		}
+		if stop.ID != tt.expectedID {
+			t.Errorf("Expected Stop ID %d, got %d", tt.expectedID, stop.ID)
+			return
+		}
+
 		stops, err := tt.provider.FindStop(tt.stop)
 		if err != nil {
-			t.Error(err)
+			t.Errorf("Stop not found %s: %s", tt.stop, err)
 			return
 		}
 		if len(stops) != 1 {
 			t.Errorf("Expected only one result, got %d", len(stops))
 			return
 		}
-
 		if stops[0].ID != tt.expectedID {
 			t.Errorf("Expected Stop ID %d, got %d", tt.expectedID, stops[0].ID)
 			return
